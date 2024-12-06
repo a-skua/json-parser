@@ -75,6 +75,80 @@ func TestTokenize(t *testing.T) {
 			input:   "null,",
 			wantErr: "Unexpected token: ','",
 		},
+		"string: ok": {
+			input: `"Hello, 世界!"`,
+			want: []Token{
+				{Type: String, Value: `"Hello, 世界!"`},
+			},
+		},
+		"string: emplyt": {
+			input: `""`,
+			want: []Token{
+				{Type: String, Value: `""`},
+			},
+		},
+		"string: escape quotation mark (\\\")": {
+			input: `"\""`,
+			want: []Token{
+				{Type: String, Value: `"\""`},
+			},
+		},
+		"string: escape reverse solidus (\\\\)": {
+			input: `"\\"`,
+			want: []Token{
+				{Type: String, Value: `"\\"`},
+			},
+		},
+		"string: escape solidus (\\/)": {
+			input: `"\/"`,
+			want: []Token{
+				{Type: String, Value: `"\/"`},
+			},
+		},
+		"string: escape backspace (\\b)": {
+			input: `"\b"`,
+			want: []Token{
+				{Type: String, Value: `"\b"`},
+			},
+		},
+		"string: escape formfeed (\\f)": {
+			input: `"\f"`,
+			want: []Token{
+				{Type: String, Value: `"\f"`},
+			},
+		},
+		"string: escape linefeed (\\n)": {
+			input: `"\n"`,
+			want: []Token{
+				{Type: String, Value: `"\n"`},
+			},
+		},
+		"string: escape carriage return (\\r)": {
+			input: `"\r"`,
+			want: []Token{
+				{Type: String, Value: `"\r"`},
+			},
+		},
+		"string: escape horizontal tab (\\t)": {
+			input: `"\t"`,
+			want: []Token{
+				{Type: String, Value: `"\t"`},
+			},
+		},
+		"string: escape unicode (\\uXXXX)": {
+			input: `"\u3042"`,
+			want: []Token{
+				{Type: String, Value: `"\u3042"`},
+			},
+		},
+		"string: ng invalid escape": {
+			input:   `"\a"`,
+			wantErr: "Unexpected Escape String: '\\a'",
+		},
+		"string: ng invalid unicode (not hex digit)": {
+			input:   `"\u30G2"`,
+			wantErr: "Unexpected unicode: '\\u30G2'",
+		},
 	}
 
 	for name, tt := range tests {

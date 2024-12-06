@@ -12,6 +12,7 @@ const (
 	True
 	False
 	Null
+	String
 )
 
 type Token struct {
@@ -51,6 +52,14 @@ func Tokenize(data []rune) ([]Token, error) {
 
 		case maybeNull(data[i:]):
 			t, n, err := tokenizeNull(data[i:])
+			if err != nil {
+				return nil, err
+			}
+			i += n
+			tokens = append(tokens, t)
+
+		case maybeString(data[i:]):
+			t, n, err := tokenizeString(data[i:])
 			if err != nil {
 				return nil, err
 			}
@@ -126,4 +135,67 @@ func tokenizeNull(data []rune) (Token, int, error) {
 	}
 
 	return New(Null, data[:4]), 4, nil
+}
+
+func maybeString(data []rune) bool {
+	return 2 <= len(data) && data[0] == '"'
+}
+
+func validStringEscapeSequence(data []rune) (int, error) {
+	if len(data) < 2 {
+		return 0, fmt.Errorf("Unexpected token: '%s'", string(data))
+	}
+
+	if data[0] != '\\' {
+		return 0, fmt.Errorf("Unexpected token: '\\'")
+	}
+
+	switch data[1] {
+	case '"', '\\', '/', 'b', 'f', 'n', 'r', 't':
+		return 2, nil
+	case 'u':
+		if len(data) < 6 {
+			return 0, fmt.Errorf("Unexpected unicode: '%s'", string(data))
+		}
+		for _, r := range data[2:6] {
+			if !isHex(r) {
+				return 0, fmt.Errorf("Unexpected unicode: '%s'", string(data[:6]))
+			}
+		}
+		return 6, nil
+	default:
+		return 0, fmt.Errorf("Unexpected Escape String: '%s'", string(data[:2]))
+	}
+}
+
+func isDigit(r rune) bool {
+	return '0' <= r && r <= '9'
+}
+
+func isHex(r rune) bool {
+	return isDigit(r) || ('a' <= r && r <= 'f') || ('A' <= r && r <= 'F')
+}
+
+func tokenizeString(data []rune) (Token, int, error) {
+
+	if l := len(data); l < 2 || (l == 2 && data[0] != '"') {
+		return Token{}, 0, fmt.Errorf("Unexpected token: '%s'", string(data))
+	}
+
+	i := 1
+	for ; i < len(data); i++ {
+		if data[i] == '"' {
+			break
+		}
+
+		if data[i] == '\\' {
+			n, err := validStringEscapeSequence(data[i:])
+			if err != nil {
+				return Token{}, 0, err
+			}
+			i += n - 1
+		}
+	}
+
+	return New(String, data[:i+1]), i + 1, nil
 }
