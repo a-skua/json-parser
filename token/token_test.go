@@ -1,8 +1,9 @@
 package token
 
 import (
-	"github.com/google/go-cmp/cmp"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestTokenize(t *testing.T) {
@@ -148,6 +149,86 @@ func TestTokenize(t *testing.T) {
 		"string: ng invalid unicode (not hex digit)": {
 			input:   `"\u30G2"`,
 			wantErr: "Unexpected unicode: '\\u30G2'",
+		},
+		"number: 0": {
+			input: "0",
+			want: []Token{
+				{Type: Number, Value: "0"},
+			},
+		},
+		"number: -0": {
+			input: "-0",
+			want: []Token{
+				{Type: Number, Value: "-0"},
+			},
+		},
+		"number: 123": {
+			input: "123",
+			want: []Token{
+				{Type: Number, Value: "123"},
+			},
+		},
+		"number: -123": {
+			input: "-123",
+			want: []Token{
+				{Type: Number, Value: "-123"},
+			},
+		},
+		"number: 0.0": {
+			input: "0.0",
+			want: []Token{
+				{Type: Number, Value: "0.0"},
+			},
+		},
+		"number: -0.0": {
+			input: "-0.0",
+			want: []Token{
+				{Type: Number, Value: "-0.0"},
+			},
+		},
+		"number: 0e0": {
+			input: "0e0",
+			want: []Token{
+				{Type: Number, Value: "0e0"},
+			},
+		},
+		"number: 0E0": {
+			input: "0E0",
+			want: []Token{
+				{Type: Number, Value: "0E0"},
+			},
+		},
+		"number: 0e+0": {
+			input: "0e+0",
+			want: []Token{
+				{Type: Number, Value: "0e+0"},
+			},
+		},
+		"number: 0e-0": {
+			input: "0e-0",
+			want: []Token{
+				{Type: Number, Value: "0e-0"},
+			},
+		},
+		"number: 0.1": {
+			input: "0.1",
+			want: []Token{
+				{Type: Number, Value: "0.1"},
+			},
+		},
+		"number: 1e-1": {
+			input: "1e-1",
+			want: []Token{
+				{Type: Number, Value: "1e-1"},
+			},
+		},
+		"number: ng 0.a": {
+			input:   "0.a",
+			wantErr: "Invalid number: 0.'a' (Expected digit after '.': 'a')",
+		},
+		"number: ng 0.": {
+			input:   "0.",
+			wantErr: "Invalid number: '0.'",
 		},
 	}
 

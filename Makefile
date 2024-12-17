@@ -9,3 +9,7 @@ cover: test
 .PHONY: fmt
 fmt:
 	@go fmt ./...
+
+.PHONY: gen
+gen:
+	@go generate ./...

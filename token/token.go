@@ -2,8 +2,12 @@ package token
 
 import (
 	"fmt"
+
+	"github.com/a-skua/json-parser/token/internal/runes"
+	"github.com/a-skua/json-parser/token/internal/state"
 )
 
+//go:generate go run golang.org/x/tools/cmd/stringer@latest -type=Type
 type Type uint8
 
 const (
@@ -12,6 +16,7 @@ const (
 	True
 	False
 	Null
+	Number
 	String
 )
 
@@ -60,6 +65,14 @@ func Tokenize(data []rune) ([]Token, error) {
 
 		case maybeString(data[i:]):
 			t, n, err := tokenizeString(data[i:])
+			if err != nil {
+				return nil, err
+			}
+			i += n
+			tokens = append(tokens, t)
+
+		case maybeNumber(data[i:]):
+			t, n, err := tokenizeNumber(data[i:])
 			if err != nil {
 				return nil, err
 			}
@@ -137,6 +150,37 @@ func tokenizeNull(data []rune) (Token, int, error) {
 	return New(Null, data[:4]), 4, nil
 }
 
+func maybeNumber(data []rune) bool {
+	return runes.IsDigit(data[0]) || data[0] == '-'
+}
+
+func tokenizeNumber(data []rune) (Token, int, error) {
+	state := state.NewNumber()
+	number := []rune{}
+
+	for _, r := range data {
+		var err error
+		state, err = state.Next(r)
+		if err != nil {
+			return Token{}, 0, fmt.Errorf("Invalid number: %s'%s' (%w)", string(number), string(r), err)
+		}
+		if state.IsEnd() {
+			break
+		}
+		number = append(number, r)
+	}
+
+	if !state.Valid() {
+		return Token{}, 0, fmt.Errorf("Invalid number: '%s'", string(number))
+	}
+
+	return New(Number, number), len(number), nil
+}
+
+func isHex(r rune) bool {
+	return runes.IsDigit(r) || ('a' <= r && r <= 'f') || ('A' <= r && r <= 'F')
+}
+
 func maybeString(data []rune) bool {
 	return 2 <= len(data) && data[0] == '"'
 }
@@ -166,14 +210,6 @@ func validStringEscapeSequence(data []rune) (int, error) {
 	default:
 		return 0, fmt.Errorf("Unexpected Escape String: '%s'", string(data[:2]))
 	}
-}
-
-func isDigit(r rune) bool {
-	return '0' <= r && r <= '9'
-}
-
-func isHex(r rune) bool {
-	return isDigit(r) || ('a' <= r && r <= 'f') || ('A' <= r && r <= 'F')
 }
 
 func tokenizeString(data []rune) (Token, int, error) {
