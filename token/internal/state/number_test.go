@@ -157,10 +157,10 @@ func TestNumber_Next(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			got, err := tt.state.Next([]rune(tt.input)[0])
 			if err != nil && err.Error() != tt.wantErr {
-				t.Fatalf("Number.next(%s) error: %v (want: %v)", tt.input, err, tt.wantErr)
+				t.Fatalf("Number.Next(%s) error: %v (want: %v)", tt.input, err, tt.wantErr)
 			}
 			if got != tt.want {
-				t.Fatalf("Number.next(%s) = %v (want: %v)", tt.input, got, tt.want)
+				t.Fatalf("Number.Next(%s) = %v (want: %v)", tt.input, got, tt.want)
 			}
 		})
 	}

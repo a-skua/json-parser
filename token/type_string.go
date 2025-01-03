@@ -14,11 +14,17 @@ func _() {
 	_ = x[Null-4]
 	_ = x[Number-5]
 	_ = x[String-6]
+	_ = x[LeftBrace-7]
+	_ = x[RightBrace-8]
+	_ = x[Colon-9]
+	_ = x[Comma-10]
+	_ = x[LeftBracket-11]
+	_ = x[RightBracket-12]
 }
 
-const _Type_name = "WhitespaceTrueFalseNullNumberString"
+const _Type_name = "WhitespaceTrueFalseNullNumberStringLeftBraceRightBraceColonCommaLeftBracketRightBracket"
 
-var _Type_index = [...]uint8{0, 10, 14, 19, 23, 29, 35}
+var _Type_index = [...]uint8{0, 10, 14, 19, 23, 29, 35, 44, 54, 59, 64, 75, 87}
 
 func (i Type) String() string {
 	i -= 1

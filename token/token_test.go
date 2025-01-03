@@ -144,11 +144,11 @@ func TestTokenize(t *testing.T) {
 		},
 		"string: ng invalid escape": {
 			input:   `"\a"`,
-			wantErr: "Unexpected Escape String: '\\a'",
+			wantErr: "Invalid string: \"\\'a' (Unexpected Escape String: 'a')",
 		},
 		"string: ng invalid unicode (not hex digit)": {
 			input:   `"\u30G2"`,
-			wantErr: "Unexpected unicode: '\\u30G2'",
+			wantErr: "Invalid string: \"\\u30'G' (Unexpected unicode: 'G')",
 		},
 		"number: 0": {
 			input: "0",
