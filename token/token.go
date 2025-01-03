@@ -18,6 +18,12 @@ const (
 	Null
 	Number
 	String
+	LeftBrace
+	RightBrace
+	Colon
+	Comma
+	LeftBracket
+	RightBracket
 )
 
 type Token struct {
@@ -34,7 +40,7 @@ func Tokenize(data []rune) ([]Token, error) {
 
 	for i := 0; i < len(data); {
 		switch {
-		case isWhitespace(data[i]):
+		case runes.IsWhitespace(data[i]):
 			t, n := tokenizeWhitespace(data[i:])
 			i += n
 			tokens = append(tokens, t)
@@ -79,6 +85,36 @@ func Tokenize(data []rune) ([]Token, error) {
 			i += n
 			tokens = append(tokens, t)
 
+		case runes.IsLeftBrace(data[i]):
+			t, n := tokenizeLeftBrace(data[i:])
+			i += n
+			tokens = append(tokens, t)
+
+		case runes.IsRightBrace(data[i]):
+			t, n := tokenizeRightBrace(data[i:])
+			i += n
+			tokens = append(tokens, t)
+
+		case runes.IsColon(data[i]):
+			t, n := tokenizeColon(data[i:])
+			i += n
+			tokens = append(tokens, t)
+
+		case runes.IsComma(data[i]):
+			t, n := tokenizeComma(data[i:])
+			i += n
+			tokens = append(tokens, t)
+
+		case runes.IsLeftBracket(data[i]):
+			t, n := tokenizeLeftBracket(data[i:])
+			i += n
+			tokens = append(tokens, t)
+
+		case runes.IsRightBracket(data[i]):
+			t, n := tokenizeRightBracket(data[i:])
+			i += n
+			tokens = append(tokens, t)
+
 		default:
 			return nil, fmt.Errorf("Unexpected token: '%s'", string(data[i]))
 		}
@@ -87,14 +123,34 @@ func Tokenize(data []rune) ([]Token, error) {
 	return tokens, nil
 }
 
-func isWhitespace(r rune) bool {
-	return r == ' ' || r == '\n' || r == '\r' || r == '\t'
+func tokenizeLeftBrace(data []rune) (Token, int) {
+	return New(LeftBrace, data[:1]), 1
+}
+
+func tokenizeRightBrace(data []rune) (Token, int) {
+	return New(RightBrace, data[:1]), 1
+}
+
+func tokenizeLeftBracket(data []rune) (Token, int) {
+	return New(LeftBracket, data[:1]), 1
+}
+
+func tokenizeRightBracket(data []rune) (Token, int) {
+	return New(RightBracket, data[:1]), 1
+}
+
+func tokenizeColon(data []rune) (Token, int) {
+	return New(Colon, data[:1]), 1
+}
+
+func tokenizeComma(data []rune) (Token, int) {
+	return New(Comma, data[:1]), 1
 }
 
 func tokenizeWhitespace(data []rune) (Token, int) {
 	whitespace := []rune{}
 	for _, r := range data {
-		if !isWhitespace(r) {
+		if !runes.IsWhitespace(r) {
 			break
 		}
 		whitespace = append(whitespace, r)
@@ -111,7 +167,7 @@ func tokenizeTrue(data []rune) (Token, int, error) {
 		return Token{}, 0, fmt.Errorf("Unexpected token: '%s'", string(data))
 	}
 
-	if 4 < len(data) && !isWhitespace(data[4]) {
+	if 4 < len(data) && !runes.IsWhitespace(data[4]) {
 		return Token{}, 0, fmt.Errorf("Unexpected token: '%s'", string(data[4]))
 	}
 
@@ -127,7 +183,7 @@ func tokenizeFalse(data []rune) (Token, int, error) {
 		return Token{}, 0, fmt.Errorf("Unexpected token: '%s'", string(data))
 	}
 
-	if 5 < len(data) && !isWhitespace(data[5]) {
+	if 5 < len(data) && !runes.IsWhitespace(data[5]) {
 		return Token{}, 0, fmt.Errorf("Unexpected token: '%s'", string(data[5]))
 	}
 
@@ -143,7 +199,7 @@ func tokenizeNull(data []rune) (Token, int, error) {
 		return Token{}, 0, fmt.Errorf("Unexpected token: '%s'", string(data))
 	}
 
-	if 4 < len(data) && !isWhitespace(data[4]) {
+	if 4 < len(data) && !runes.IsWhitespace(data[4]) {
 		return Token{}, 0, fmt.Errorf("Unexpected token: '%s'", string(data[4]))
 	}
 

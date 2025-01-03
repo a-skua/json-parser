@@ -49,7 +49,7 @@ func TestTokenize(t *testing.T) {
 		"true: ok": {
 			input: "true",
 			want: []Token{
-				{Type: True, Value: "true"},
+				{True, "true"},
 			},
 		},
 		"true: ng": {
@@ -59,7 +59,7 @@ func TestTokenize(t *testing.T) {
 		"false: ok": {
 			input: "false",
 			want: []Token{
-				{Type: False, Value: "false"},
+				{False, "false"},
 			},
 		},
 		"false: ng": {
@@ -69,7 +69,7 @@ func TestTokenize(t *testing.T) {
 		"null: ok": {
 			input: "null",
 			want: []Token{
-				{Type: Null, Value: "null"},
+				{Null, "null"},
 			},
 		},
 		"null: ng": {
@@ -79,67 +79,67 @@ func TestTokenize(t *testing.T) {
 		"string: ok": {
 			input: `"Hello, 世界!"`,
 			want: []Token{
-				{Type: String, Value: `"Hello, 世界!"`},
+				{String, `"Hello, 世界!"`},
 			},
 		},
 		"string: emplyt": {
 			input: `""`,
 			want: []Token{
-				{Type: String, Value: `""`},
+				{String, `""`},
 			},
 		},
 		"string: escape quotation mark (\\\")": {
 			input: `"\""`,
 			want: []Token{
-				{Type: String, Value: `"\""`},
+				{String, `"\""`},
 			},
 		},
 		"string: escape reverse solidus (\\\\)": {
 			input: `"\\"`,
 			want: []Token{
-				{Type: String, Value: `"\\"`},
+				{String, `"\\"`},
 			},
 		},
 		"string: escape solidus (\\/)": {
 			input: `"\/"`,
 			want: []Token{
-				{Type: String, Value: `"\/"`},
+				{String, `"\/"`},
 			},
 		},
 		"string: escape backspace (\\b)": {
 			input: `"\b"`,
 			want: []Token{
-				{Type: String, Value: `"\b"`},
+				{String, `"\b"`},
 			},
 		},
 		"string: escape formfeed (\\f)": {
 			input: `"\f"`,
 			want: []Token{
-				{Type: String, Value: `"\f"`},
+				{String, `"\f"`},
 			},
 		},
 		"string: escape linefeed (\\n)": {
 			input: `"\n"`,
 			want: []Token{
-				{Type: String, Value: `"\n"`},
+				{String, `"\n"`},
 			},
 		},
 		"string: escape carriage return (\\r)": {
 			input: `"\r"`,
 			want: []Token{
-				{Type: String, Value: `"\r"`},
+				{String, `"\r"`},
 			},
 		},
 		"string: escape horizontal tab (\\t)": {
 			input: `"\t"`,
 			want: []Token{
-				{Type: String, Value: `"\t"`},
+				{String, `"\t"`},
 			},
 		},
 		"string: escape unicode (\\uXXXX)": {
 			input: `"\u3042"`,
 			want: []Token{
-				{Type: String, Value: `"\u3042"`},
+				{String, `"\u3042"`},
 			},
 		},
 		"string: ng invalid escape": {
@@ -153,73 +153,73 @@ func TestTokenize(t *testing.T) {
 		"number: 0": {
 			input: "0",
 			want: []Token{
-				{Type: Number, Value: "0"},
+				{Number, "0"},
 			},
 		},
 		"number: -0": {
 			input: "-0",
 			want: []Token{
-				{Type: Number, Value: "-0"},
+				{Number, "-0"},
 			},
 		},
 		"number: 123": {
 			input: "123",
 			want: []Token{
-				{Type: Number, Value: "123"},
+				{Number, "123"},
 			},
 		},
 		"number: -123": {
 			input: "-123",
 			want: []Token{
-				{Type: Number, Value: "-123"},
+				{Number, "-123"},
 			},
 		},
 		"number: 0.0": {
 			input: "0.0",
 			want: []Token{
-				{Type: Number, Value: "0.0"},
+				{Number, "0.0"},
 			},
 		},
 		"number: -0.0": {
 			input: "-0.0",
 			want: []Token{
-				{Type: Number, Value: "-0.0"},
+				{Number, "-0.0"},
 			},
 		},
 		"number: 0e0": {
 			input: "0e0",
 			want: []Token{
-				{Type: Number, Value: "0e0"},
+				{Number, "0e0"},
 			},
 		},
 		"number: 0E0": {
 			input: "0E0",
 			want: []Token{
-				{Type: Number, Value: "0E0"},
+				{Number, "0E0"},
 			},
 		},
 		"number: 0e+0": {
 			input: "0e+0",
 			want: []Token{
-				{Type: Number, Value: "0e+0"},
+				{Number, "0e+0"},
 			},
 		},
 		"number: 0e-0": {
 			input: "0e-0",
 			want: []Token{
-				{Type: Number, Value: "0e-0"},
+				{Number, "0e-0"},
 			},
 		},
 		"number: 0.1": {
 			input: "0.1",
 			want: []Token{
-				{Type: Number, Value: "0.1"},
+				{Number, "0.1"},
 			},
 		},
 		"number: 1e-1": {
 			input: "1e-1",
 			want: []Token{
-				{Type: Number, Value: "1e-1"},
+				{Number, "1e-1"},
 			},
 		},
 		"number: ng 0.a": {
@@ -229,6 +229,34 @@ func TestTokenize(t *testing.T) {
 		"number: ng 0.": {
 			input:   "0.",
 			wantErr: "Invalid number: '0.'",
+		},
+		"object": {
+			input: `{"key": "value", "key2": "value2"}`,
+			want: []Token{
+				{LeftBrace, "{"},
+				{String, `"key"`},
+				{Colon, ":"},
+				{Whitespace, " "},
+				{String, `"value"`},
+				{Comma, ","},
+				{Whitespace, " "},
+				{String, `"key2"`},
+				{Colon, ":"},
+				{Whitespace, " "},
+				{String, `"value2"`},
+				{RightBrace, "}"},
+			},
+		},
+		"array": {
+			input: `["value1", "value2"]`,
+			want: []Token{
+				{LeftBracket, "["},
+				{String, `"value1"`},
+				{Comma, ","},
+				{Whitespace, " "},
+				{String, `"value2"`},
+				{RightBracket, "]"},
+			},
 		},
 	}
 
