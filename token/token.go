@@ -187,36 +187,50 @@ func tokenizeWhitespace(data []rune) (Token, int) {
 }
 
 func tokenizeTrue(data []rune) (Token, int, error) {
-	if l := len(data); l < 4 || (l == 4 && string(data) != "true") {
-		return Token{}, 0, fmt.Errorf("Unexpected token: '%s'", string(data))
+	if l := len(data); (l < 4) ||
+		(l == 4 && string(data) != "true") {
+		return Token{}, 0, fmt.Errorf("Unexpected Token: '%s'", string(data))
 	}
-
-	if 4 < len(data) && !runes.IsWhitespace(data[4]) {
-		return Token{}, 0, fmt.Errorf("Unexpected token: '%s'", string(data[4]))
+	if l := len(data); 4 < l &&
+		!runes.IsWhitespace(data[4]) &&
+		!runes.IsComma(data[4]) &&
+		!runes.IsRightBracket(data[4]) &&
+		!runes.IsRightBrace(data[4]) {
+		return Token{}, 0, fmt.Errorf("Unexpected Token: true'%s'", string(data[4]))
 	}
 
 	return New(True, data[:4]), 4, nil
 }
 
 func tokenizeFalse(data []rune) (Token, int, error) {
-	if l := len(data); l < 5 || (l == 5 && string(data) != "false") {
-		return Token{}, 0, fmt.Errorf("Unexpected token: '%s'", string(data))
+	if l := len(data); (l < 5) ||
+		(l == 5 && string(data) != "false") {
+		return Token{}, 0, fmt.Errorf("Unexpected Token:'%s'", string(data))
 	}
 
-	if 5 < len(data) && !runes.IsWhitespace(data[5]) {
-		return Token{}, 0, fmt.Errorf("Unexpected token: '%s'", string(data[5]))
+	if l := len(data); 5 < l &&
+		!runes.IsWhitespace(data[5]) &&
+		!runes.IsComma(data[5]) &&
+		!runes.IsRightBracket(data[5]) &&
+		!runes.IsRightBrace(data[5]) {
+		return Token{}, 0, fmt.Errorf("Unexpected Token: false'%s'", string(data[5]))
 	}
 
 	return New(False, data[:5]), 5, nil
 }
 
 func tokenizeNull(data []rune) (Token, int, error) {
-	if l := len(data); l < 4 || (l == 4 && string(data) != "null") {
-		return Token{}, 0, fmt.Errorf("Unexpected token: '%s'", string(data))
+	if l := len(data); (l < 4) ||
+		(l == 4 && string(data) != "null") {
+		return Token{}, 0, fmt.Errorf("Unexpected Token: '%s'", string(data))
 	}
 
-	if 4 < len(data) && !runes.IsWhitespace(data[4]) {
-		return Token{}, 0, fmt.Errorf("Unexpected token: '%s'", string(data[4]))
+	if l := len(data); 4 < l &&
+		!runes.IsWhitespace(data[4]) &&
+		!runes.IsComma(data[4]) &&
+		!runes.IsRightBracket(data[4]) &&
+		!runes.IsRightBrace(data[4]) {
+		return Token{}, 0, fmt.Errorf("Unexpected Token: null'%s'", string(data[4]))
 	}
 
 	return New(Null, data[:4]), 4, nil

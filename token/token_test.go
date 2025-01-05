@@ -47,34 +47,25 @@ func TestTokenize(t *testing.T) {
 			},
 		},
 		"true: ok": {
-			input: "true",
+			input: "true,",
 			want: []Token{
 				{True, "true"},
+				{Comma, ","},
 			},
-		},
-		"true: ng": {
-			input:   "true,",
-			wantErr: "Unexpected token: ','",
 		},
 		"false: ok": {
-			input: "false",
+			input: "false,",
 			want: []Token{
 				{False, "false"},
+				{Comma, ","},
 			},
-		},
-		"false: ng": {
-			input:   "false,",
-			wantErr: "Unexpected token: ','",
 		},
 		"null: ok": {
-			input: "null",
+			input: "null,",
 			want: []Token{
 				{Null, "null"},
+				{Comma, ","},
 			},
-		},
-		"null: ng": {
-			input:   "null,",
-			wantErr: "Unexpected token: ','",
 		},
 		"string: ok": {
 			input: `"Hello, 世界!"`,
@@ -264,11 +255,11 @@ func TestTokenize(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			got, err := Tokenize([]rune(tt.input))
 			if err != nil && err.Error() != tt.wantErr {
-				t.Fatalf("Tokenize() error: %v (want: %v)", err, tt.wantErr)
+				t.Fatalf("Tokenize(%s) error: %v (want: %v)", tt.input, err, tt.wantErr)
 			}
 
 			if diff := cmp.Diff(tt.want, got); diff != "" {
-				t.Fatalf("Tokenize() mismatch (-want +got):\n%s", diff)
+				t.Fatalf("Tokenize(%s) mismatch (-want +got):\n%s", tt.input, diff)
 			}
 		})
 	}
