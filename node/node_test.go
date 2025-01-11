@@ -54,6 +54,14 @@ func TestLex(t *testing.T) {
 []`,
 			want: `[["hello",123,true,false,null] ["hello"] [123] [true] [false] [null] [["hello",123],[true,false,null]] []]`,
 		},
+		"array (err)": {
+			input:   "[1,2,3,]",
+			wantErr: "Unexpected End of Array",
+		},
+		"array (err2)": {
+			input:   "[1,2,3,,]",
+			wantErr: "Unexpected Comma",
+		},
 		"object": {
 			input: `{"key1": "value1", "key2": 123, "key3": true, "key4": false, "key5": null}
 {"array": ["hello", 123, true, false, null]}
@@ -70,7 +78,7 @@ func TestLex(t *testing.T) {
 			}
 
 			got := fmt.Sprint(nodes)
-			if tt.want != got {
+			if err == nil && tt.want != got {
 				t.Fatalf("Lex(%s) = %v, want %v", tt.input, got, tt.want)
 			}
 		})

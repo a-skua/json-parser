@@ -1,20 +1,22 @@
 package state
 
+//go:generate go run golang.org/x/tools/cmd/stringer@latest -type=Array
 type Array uint8
 
 const (
 	_ Array = iota
+	ArrayFirstValue
 	ArrayValue
 	ArraySeparator
 )
 
 func NewArray() Array {
-	return ArrayValue
+	return ArrayFirstValue
 }
 
 func (a Array) Next() Array {
 	switch a {
-	case ArrayValue:
+	case ArrayValue, ArrayFirstValue:
 		return ArraySeparator
 	default:
 		return ArrayValue
@@ -22,13 +24,14 @@ func (a Array) Next() Array {
 }
 
 func (a Array) IsValue() bool {
-	return a == ArrayValue
+	return a == ArrayValue || a == ArrayFirstValue
 }
 
 func (a Array) IsSeparator() bool {
-	return a == ArraySeparator
+	return a == ArraySeparator || a == ArrayFirstValue
 }
 
+//go:generate go run golang.org/x/tools/cmd/stringer@latest -type=Object
 type Object uint8
 
 const (

@@ -9,6 +9,10 @@ func TestArray_Next(t *testing.T) {
 		input Array
 		want  Array
 	}{
+		"ArrayFirstValue": {
+			input: ArrayFirstValue,
+			want:  ArraySeparator,
+		},
 		"ArrayValue": {
 			input: ArrayValue,
 			want:  ArraySeparator,
@@ -34,6 +38,10 @@ func TestArray_IsValue(t *testing.T) {
 		input Array
 		want  bool
 	}{
+		"ArrayFirstValue": {
+			input: ArrayFirstValue,
+			want:  true,
+		},
 		"ArrayValue": {
 			input: ArrayValue,
 			want:  true,
@@ -59,6 +67,10 @@ func TestArray_IsSeparator(t *testing.T) {
 		input Array
 		want  bool
 	}{
+		"ArrayFirstValue": {
+			input: ArrayFirstValue,
+			want:  true,
+		},
 		"ArrayValue": {
 			input: ArrayValue,
 			want:  false,

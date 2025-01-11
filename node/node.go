@@ -244,9 +244,19 @@ func (l *Lexer) parseArray() (Node, error) {
 		if state.IsSeparator() && err == ErrIsComma {
 			continue
 		}
-		if err == ErrEOA {
+
+		if state.IsSeparator() && err == ErrEOA {
 			break
 		}
+
+		if err == ErrEOA {
+			return nil, errors.New("Unexpected End of Array")
+		}
+
+		if err == ErrIsComma {
+			return nil, errors.New("Unexpected Comma")
+		}
+
 		if err != nil {
 			return nil, err
 		}
